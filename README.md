@@ -2,8 +2,6 @@
 
 An annotation-driven memoization library for Java 17+. Cache method results transparently using compile-time AspectJ weaving with pluggable cache backends and metrics.
 
-[![CI](https://github.com/anomalyco/memoize/actions/workflows/ci.yml/badge.svg)](https://github.com/anomalyco/memoize/actions/workflows/ci.yml)
-
 ## Features
 
 - **Annotation-driven** - Add `@MemoizeThis` to any method to enable caching
