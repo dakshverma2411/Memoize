@@ -22,7 +22,7 @@
         <classgraph.version>4.8.179</classgraph.version>
         <dropwizard-metrics.version>4.2.29</dropwizard-metrics.version>
         <junit.version>5.11.4</junit.version>
-        <mockito.version>5.14.2</mockito.version>
+        <mockito.version>5.23.0</mockito.version>
     </properties>
 
     <dependencyManagement>
