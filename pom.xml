@@ -6,7 +6,7 @@
 
     <groupId>space.hypercode</groupId>
     <artifactId>memoize</artifactId>
-    <version>0.1.1-alpha.1</version>
+    <version>0.1.2-alpha.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Memoize</name>
