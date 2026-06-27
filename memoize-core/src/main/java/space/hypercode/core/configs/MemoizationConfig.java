@@ -19,9 +19,13 @@ import java.util.Objects;
 @Getter
 public final class MemoizationConfig {
 
+    /** The time-to-live for cached entries. */
     private final Duration ttl;
+    /** The maximum number of entries allowed in the cache (0 for unlimited). */
     private final long maxSize;
+    /** The key converter used to generate cache keys from method arguments. */
     private final MemoizationKeyConverter converter;
+    /** The criteria used to determine whether a return value should be cached. Defaults to {@link EligibilityCriterias#ALWAYS}. */
     private final EligibilityCriteria eligibilityCriteria;
 
     @Builder

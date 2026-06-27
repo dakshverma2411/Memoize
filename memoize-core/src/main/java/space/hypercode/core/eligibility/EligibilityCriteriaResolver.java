@@ -23,6 +23,11 @@ public class EligibilityCriteriaResolver {
     private final MemoizationConfigs configs;
     private final ConcurrentHashMap<Class<? extends EligibilityCriteria>, EligibilityCriteria> criteriaCache;
 
+    /**
+     * Creates a new resolver backed by the given configurations.
+     *
+     * @param configs the named cache configurations used for {@code useConfig=true} resolution
+     */
     public EligibilityCriteriaResolver(final MemoizationConfigs configs) {
         this.configs = configs;
         this.criteriaCache = new ConcurrentHashMap<>();

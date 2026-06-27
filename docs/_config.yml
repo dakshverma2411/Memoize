@@ -1,0 +1,34 @@
+title: Memoize
+description: Compile-time AspectJ memoization for Java
+remote_theme: just-the-docs/just-the-docs
+
+url: https://dakshverma2411.github.io/memoize
+
+color_scheme: default
+
+permalink: pretty
+
+aux_links:
+  "GitHub":
+    - "https://github.com/dakshverma2411/memoize"
+
+aux_links_new_tab: true
+
+nav_sort: order
+
+heading_anchors: true
+
+search_enabled: true
+
+back_to_top: true
+back_to_top_text: "Back to top"
+
+footer_content: "Memoize is licensed under the <a href=\"https://github.com/dakshverma2411/memoize/blob/main/LICENSE\">Apache License 2.0</a>."
+
+plugins:
+  - jekyll-seo-tag
+
+kramdown:
+  syntax_highlighter_opts:
+    block:
+      line_numbers: false

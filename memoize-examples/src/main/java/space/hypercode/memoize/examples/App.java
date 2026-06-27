@@ -5,6 +5,12 @@ import space.hypercode.core.eligibility.MemoizeNonNulls;
 
 import java.time.Duration;
 
+/**
+ * Example application demonstrating memoize usage with {@link MemoizeThis}-annotated methods.
+ *
+ * <p>Includes examples of explicit key converters, {@link space.hypercode.core.models.Memoizable Memoizable}
+ * key resolution, TTL-based expiration, and {@link MemoizeNonNulls} eligibility criteria.
+ */
 public class App {
 
     public App() {

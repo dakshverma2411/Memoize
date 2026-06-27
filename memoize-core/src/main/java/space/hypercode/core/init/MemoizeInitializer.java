@@ -27,6 +27,11 @@ public class MemoizeInitializer {
 
     private final Memoize memoize;
 
+    /**
+     * Creates a new initializer for the given {@link Memoize} instance.
+     *
+     * @param memoize the memoize instance to validate
+     */
     public MemoizeInitializer(final Memoize memoize) {
         this.memoize = memoize;
     }

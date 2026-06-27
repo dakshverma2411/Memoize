@@ -1,5 +1,10 @@
 package space.hypercode.core.metrics;
 
+/**
+ * A no-op implementation of {@link MemoizationMetrics} that silently discards all metrics.
+ *
+ * <p>Used as the default when no metrics implementation is provided to {@link space.hypercode.core.Memoize}.
+ */
 public class NoOpMetrics implements MemoizationMetrics {
     @Override
     public void recordHit(String memoizationName) {

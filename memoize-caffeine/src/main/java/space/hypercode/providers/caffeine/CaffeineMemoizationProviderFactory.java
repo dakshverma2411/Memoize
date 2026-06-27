@@ -10,6 +10,7 @@ import java.time.Duration;
  */
 public class CaffeineMemoizationProviderFactory implements MemoizationProviderFactory {
 
+    /** {@inheritDoc} */
     @Override
     public MemoizationProvider create(final String memoizationName, final Duration ttl, final long maxSize) {
         return new CaffeineMemoizationProvider(memoizationName, ttl, maxSize);

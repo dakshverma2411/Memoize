@@ -26,6 +26,12 @@ public class DropwizardMemoizationMetrics implements MemoizationMetrics {
 
     private final MetricRegistry registry;
 
+    /**
+     * Creates a new instance backed by the given {@link MetricRegistry}.
+     *
+     * @param registry the Dropwizard {@link MetricRegistry} to record metrics in
+     * @throws IllegalArgumentException if {@code registry} is {@code null}
+     */
     public DropwizardMemoizationMetrics(final MetricRegistry registry) {
         if (registry == null) {
             throw new IllegalArgumentException("MetricRegistry must not be null");
@@ -33,31 +39,37 @@ public class DropwizardMemoizationMetrics implements MemoizationMetrics {
         this.registry = registry;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void recordHit(final String memoizationName) {
         registry.counter(name(memoizationName, "hits")).inc();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void recordMiss(final String memoizationName) {
         registry.counter(name(memoizationName, "misses")).inc();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void recordPut(final String memoizationName) {
         registry.counter(name(memoizationName, "puts")).inc();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void recordEviction(final String memoizationName) {
         registry.counter(name(memoizationName, "evictions")).inc();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void recordGetDuration(final String memoizationName, final long durationNanos) {
         registry.timer(name(memoizationName, "get")).update(durationNanos, TimeUnit.NANOSECONDS);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void recordPutDuration(final String memoizationName, final long durationNanos) {
         registry.timer(name(memoizationName, "put")).update(durationNanos, TimeUnit.NANOSECONDS);

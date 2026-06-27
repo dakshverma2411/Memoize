@@ -13,14 +13,23 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class CacheTestService {
 
+    /** Invocation counter for {@link #cachedSquare(Long)}. */
     private final AtomicInteger cachedSquareCount = new AtomicInteger(0);
+    /** Invocation counter for {@link #cachedMemoizable(MyLong)}. */
     private final AtomicInteger cachedMemoizableCount = new AtomicInteger(0);
+    /** Invocation counter for {@link #shortTtl(MyLong)}. */
     private final AtomicInteger shortTtlCount = new AtomicInteger(0);
+    /** Invocation counter for {@link #nonNullOnly(MyLong)}. */
     private final AtomicInteger nonNullOnlyCount = new AtomicInteger(0);
+    /** Invocation counter for {@link #alwaysNull(MyLong)}. */
     private final AtomicInteger alwaysNullCount = new AtomicInteger(0);
+    /** Invocation counter for {@link #noConverter(String)}. */
     private final AtomicInteger noConverterCount = new AtomicInteger(0);
+    /** Invocation counter for {@link #namedCache(MyLong)}. */
     private final AtomicInteger namedCacheCount = new AtomicInteger(0);
+    /** Invocation counter for {@link #throwingMethod(MyLong)}. */
     private final AtomicInteger throwingCount = new AtomicInteger(0);
+    /** Invocation counter for {@link #configBased(MyLong)}. */
     private final AtomicInteger configBasedCount = new AtomicInteger(0);
 
     // --- Memoized methods ---
@@ -124,38 +133,83 @@ public class CacheTestService {
 
     // --- Counter accessors ---
 
+    /**
+     * Returns the number of times {@link #cachedSquare(Long)} was executed (cache misses).
+     *
+     * @return the invocation count
+     */
     public int getCachedSquareCount() {
         return cachedSquareCount.get();
     }
 
+    /**
+     * Returns the number of times {@link #cachedMemoizable(MyLong)} was executed (cache misses).
+     *
+     * @return the invocation count
+     */
     public int getCachedMemoizableCount() {
         return cachedMemoizableCount.get();
     }
 
+    /**
+     * Returns the number of times {@link #shortTtl(MyLong)} was executed (cache misses).
+     *
+     * @return the invocation count
+     */
     public int getShortTtlCount() {
         return shortTtlCount.get();
     }
 
+    /**
+     * Returns the number of times {@link #nonNullOnly(MyLong)} was executed (cache misses).
+     *
+     * @return the invocation count
+     */
     public int getNonNullOnlyCount() {
         return nonNullOnlyCount.get();
     }
 
+    /**
+     * Returns the number of times {@link #alwaysNull(MyLong)} was executed (cache misses).
+     *
+     * @return the invocation count
+     */
     public int getAlwaysNullCount() {
         return alwaysNullCount.get();
     }
 
+    /**
+     * Returns the number of times {@link #noConverter(String)} was executed (cache misses).
+     *
+     * @return the invocation count
+     */
     public int getNoConverterCount() {
         return noConverterCount.get();
     }
 
+    /**
+     * Returns the number of times {@link #namedCache(MyLong)} was executed (cache misses).
+     *
+     * @return the invocation count
+     */
     public int getNamedCacheCount() {
         return namedCacheCount.get();
     }
 
+    /**
+     * Returns the number of times {@link #throwingMethod(MyLong)} was executed (cache misses).
+     *
+     * @return the invocation count
+     */
     public int getThrowingCount() {
         return throwingCount.get();
     }
 
+    /**
+     * Returns the number of times {@link #configBased(MyLong)} was executed (cache misses).
+     *
+     * @return the invocation count
+     */
     public int getConfigBasedCount() {
         return configBasedCount.get();
     }

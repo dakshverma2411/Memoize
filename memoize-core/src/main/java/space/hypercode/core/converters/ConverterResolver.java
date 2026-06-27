@@ -26,6 +26,11 @@ public class ConverterResolver {
     private final MemoizationConfigs configs;
     private final ConcurrentHashMap<Class<? extends MemoizationKeyConverter>, MemoizationKeyConverter> converterCache;
 
+    /**
+     * Creates a new resolver backed by the given configurations.
+     *
+     * @param configs the named cache configurations used for {@code useConfig=true} resolution
+     */
     public ConverterResolver(final MemoizationConfigs configs) {
         this.configs = configs;
         this.converterCache = new ConcurrentHashMap<>();
