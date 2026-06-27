@@ -5,7 +5,7 @@ theme: just-the-docs
 url: https://dakshverma2411.github.io/memoize
 baseurl: /memoize
 
-color_scheme: default
+color_scheme: light
 
 permalink: pretty
 
