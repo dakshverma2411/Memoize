@@ -1,5 +1,6 @@
 package space.hypercode.core.aspect;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -7,11 +8,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import space.hypercode.core.Memoize;
 import space.hypercode.core.annotations.MemoizeThis;
 import space.hypercode.core.configs.MemoizationConfig;
-import space.hypercode.core.configs.MemoizationConfigs;
 import space.hypercode.core.converters.ConverterResolver;
 import space.hypercode.core.converters.MemoizationKeyConverter;
 import space.hypercode.core.converters.MultiArgMemoizationKeyConverter;
 import space.hypercode.core.converters.SingleArgMemoizationKeyConverter;
+import space.hypercode.core.eligibility.EligibilityCriteria;
+import space.hypercode.core.eligibility.EligibilityCriteriaResolver;
+import space.hypercode.core.models.MemoizeCallContext;
 import space.hypercode.core.providers.MemoizationProvider;
 import space.hypercode.core.providers.MemoizationProviderFactory;
 
@@ -85,11 +88,11 @@ public class MemoizeAspect {
     private Object tryGetFromCache(final ProceedingJoinPoint joinPoint,
                                    final MemoizeThis annotation,
                                    final Memoize memoize) {
-        final String cacheName = resolveCacheName(annotation, joinPoint);
+        final String memoizationName = resolveMemoizationName(annotation, joinPoint);
 
         final ConverterResolver converterResolver = memoize.getConverterResolver();
         final Object[] args = joinPoint.getArgs();
-        final Optional<MemoizationKeyConverter> converterOpt = converterResolver.resolve(annotation, cacheName, args);
+        final Optional<MemoizationKeyConverter> converterOpt = converterResolver.resolve(annotation, memoizationName, args);
 
         if (converterOpt.isEmpty()) {
             return CACHE_MISS;
@@ -100,7 +103,7 @@ public class MemoizeAspect {
             return CACHE_MISS;
         }
 
-        final MemoizationProvider provider = getOrCreateProvider(cacheName, annotation, memoize);
+        final MemoizationProvider provider = getOrCreateProvider(memoizationName, annotation, memoize);
         if (provider == null) {
             return CACHE_MISS;
         }
@@ -112,11 +115,11 @@ public class MemoizeAspect {
         final long durationNanos = System.nanoTime() - start;
 
         if (metrics != null) {
-            recordMetricSafely(() -> metrics.recordGetDuration(cacheName, durationNanos));
+            recordMetricSafely(() -> metrics.recordGetDuration(memoizationName, durationNanos));
             if (cachedValue.isPresent()) {
-                recordMetricSafely(() -> metrics.recordHit(cacheName));
+                recordMetricSafely(() -> metrics.recordHit(memoizationName));
             } else {
-                recordMetricSafely(() -> metrics.recordMiss(cacheName));
+                recordMetricSafely(() -> metrics.recordMiss(memoizationName));
             }
         }
 
@@ -131,11 +134,11 @@ public class MemoizeAspect {
                                final MemoizeThis annotation,
                                final Memoize memoize,
                                final Object result) {
-        final String cacheName = resolveCacheName(annotation, joinPoint);
+        final String memoizationName = resolveMemoizationName(annotation, joinPoint);
 
         final ConverterResolver converterResolver = memoize.getConverterResolver();
         final Object[] args = joinPoint.getArgs();
-        final Optional<MemoizationKeyConverter> converterOpt = converterResolver.resolve(annotation, cacheName, args);
+        final Optional<MemoizationKeyConverter> converterOpt = converterResolver.resolve(annotation, memoizationName, args);
 
         if (converterOpt.isEmpty()) {
             return;
@@ -145,13 +148,15 @@ public class MemoizeAspect {
         if (key == null || key.isEmpty()) {
             return;
         }
-
-        final boolean cacheNulls = resolveCacheNulls(annotation, cacheName, memoize.getConfigs());
-        if (result == null && !cacheNulls) {
+        final EligibilityCriteriaResolver criteriaResolver = memoize.getEligibilityCriteriaResolver();
+        final EligibilityCriteria criteria = criteriaResolver.resolve(annotation, memoizationName);
+        final MemoizeCallContext context = buildCallContext(joinPoint, result);
+        final boolean shouldMemoize = criteria.shouldMemoize(context);
+        if (!shouldMemoize) {
             return;
         }
 
-        final MemoizationProvider provider = getOrCreateProvider(cacheName, annotation, memoize);
+        final MemoizationProvider provider = getOrCreateProvider(memoizationName, annotation, memoize);
         if (provider == null) {
             return;
         }
@@ -163,13 +168,20 @@ public class MemoizeAspect {
         final long durationNanos = System.nanoTime() - start;
 
         if (metrics != null) {
-            recordMetricSafely(() -> metrics.recordPut(cacheName));
-            recordMetricSafely(() -> metrics.recordPutDuration(cacheName, durationNanos));
+            recordMetricSafely(() -> metrics.recordPut(memoizationName));
+            recordMetricSafely(() -> metrics.recordPutDuration(memoizationName, durationNanos));
         }
     }
 
-    private String resolveCacheName(final MemoizeThis annotation,
-                                    final ProceedingJoinPoint joinPoint) {
+    private MemoizeCallContext buildCallContext(final JoinPoint joinPoint, final Object result) {
+        return MemoizeCallContext.builder()
+            .returnValue(result)
+            .args(joinPoint.getArgs())
+            .build();
+    }
+
+    private String resolveMemoizationName(final MemoizeThis annotation,
+                                          final ProceedingJoinPoint joinPoint) {
         if (annotation.name() != null && !annotation.name().isEmpty()) {
             return annotation.name();
         }
@@ -208,11 +220,11 @@ public class MemoizeAspect {
         }
     }
 
-    private MemoizationProvider getOrCreateProvider(final String cacheName,
+    private MemoizationProvider getOrCreateProvider(final String memoizationName,
                                                     final MemoizeThis annotation,
                                                     final Memoize memoize) {
         try {
-            return providerCache.computeIfAbsent(cacheName, name -> {
+            return providerCache.computeIfAbsent(memoizationName, name -> {
                 final Duration ttl;
                 final long maxSize;
 
@@ -234,29 +246,17 @@ public class MemoizeAspect {
                 return createProvider(name, ttl, maxSize, memoize);
             });
         } catch (final Exception e) {
-            LOG.log(Level.WARNING, "Memoize: Failed to create provider for cache '" + cacheName + "'.", e);
+            LOG.log(Level.WARNING, "Memoize: Failed to create provider for cache '" + memoizationName + "'.", e);
             return null;
         }
     }
 
-    private MemoizationProvider createProvider(final String cacheName,
+    private MemoizationProvider createProvider(final String memoizationName,
                                               final Duration ttl,
                                               final long maxSize,
                                               final Memoize memoize) {
         final MemoizationProviderFactory factory = memoize.getProviderFactory();
-        return factory.create(cacheName, ttl, maxSize);
-    }
-
-    private boolean resolveCacheNulls(final MemoizeThis annotation,
-                                      final String cacheName,
-                                      final MemoizationConfigs configs) {
-        if (annotation.useConfig()) {
-            final Optional<MemoizationConfig> configOpt = configs.get(cacheName);
-            if (configOpt.isPresent()) {
-                return configOpt.get().isCacheNulls();
-            }
-        }
-        return annotation.cacheNulls();
+        return factory.create(memoizationName, ttl, maxSize);
     }
 
     /**

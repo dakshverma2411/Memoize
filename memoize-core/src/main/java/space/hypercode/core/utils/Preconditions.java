@@ -13,6 +13,15 @@ public final class Preconditions {
         throw new UnsupportedOperationException("Utility class");
     }
 
+    /**
+     * Validates that the given object is not {@code null}.
+     *
+     * @param obj      the object to check
+     * @param errorMsg the exception message if the check fails
+     * @param <T>      the type of the object
+     * @return {@code obj} if it is not null
+     * @throws IllegalArgumentException if {@code obj} is null
+     */
     public static <T> T validateNonNull(final T obj, final String errorMsg) {
         if (obj == null) {
             throw new IllegalArgumentException(errorMsg);
@@ -20,6 +29,14 @@ public final class Preconditions {
         return obj;
     }
 
+    /**
+     * Validates that the given string is neither {@code null} nor empty.
+     *
+     * @param value    the string to check
+     * @param errorMsg the exception message if the check fails
+     * @return {@code value} if it is not null or empty
+     * @throws IllegalArgumentException if {@code value} is null or empty
+     */
     public static String validateNotNullOrEmpty(final String value, final String errorMsg) {
         if (value == null || value.isEmpty()) {
             throw new IllegalArgumentException(errorMsg);

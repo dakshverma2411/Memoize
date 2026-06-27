@@ -1,5 +1,9 @@
 # Memoize
 
+[![CI](https://github.com/dakshverma2411/memoize/actions/workflows/ci.yml/badge.svg)](https://github.com/dakshverma2411/memoize/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Java](https://img.shields.io/badge/Java-17%2B-orange)](https://openjdk.org/)
+
 An annotation-driven memoization library for Java 17+. Cache method results transparently using compile-time AspectJ weaving with pluggable cache backends and metrics.
 
 ## Features
@@ -180,8 +184,14 @@ Implement the `MemoizationMetrics` interface to integrate with your monitoring s
 
 ## License
 
-TBD
+This project is licensed under the [Apache License 2.0](LICENSE).
 
 ## Status
 
 **Alpha** - API is subject to change. Not yet recommended for production use.
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) before submitting a PR.
+
+See also: [Code of Conduct](CODE_OF_CONDUCT.md)

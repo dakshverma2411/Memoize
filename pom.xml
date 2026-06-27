@@ -8,6 +8,40 @@
     <artifactId>memoize</artifactId>
     <version>0.1.0-alpha.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <name>Memoize</name>
+    <description>Annotation-driven memoization library for Java 17+ with compile-time AspectJ weaving, pluggable cache backends, and metrics support.</description>
+    <url>https://github.com/dakshverma2411/memoize</url>
+    <inceptionYear>2025</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>dakshverma2411</id>
+            <name>Daksh Verma</name>
+            <url>https://github.com/dakshverma2411</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/dakshverma2411/memoize.git</connection>
+        <developerConnection>scm:git:ssh://github.com:dakshverma2411/memoize.git</developerConnection>
+        <url>https://github.com/dakshverma2411/memoize</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/dakshverma2411/memoize/issues</url>
+    </issueManagement>
+
     <modules>
         <module>memoize-bom</module>
         <module>memoize-caffeine</module>
@@ -15,12 +49,14 @@
         <module>memoize-parent</module>
         <module>memoize-dw-metrics</module>
         <module>memoize-examples</module>
+        <module>memoize-dependencies</module>
     </modules>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.42</lombok.version>
+        <aspectj.version>1.9.22.1</aspectj.version>
     </properties>
-
 </project>
