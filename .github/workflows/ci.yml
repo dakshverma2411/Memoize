@@ -2,9 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [ master, develop, 'release/**' ]
+    branches: [ main ]
   pull_request:
-    branches: [ master, develop, 'release/**' ]
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -27,6 +31,28 @@ jobs:
 
       - name: Build and Test
         run: mvn -B clean verify --fail-at-end
+
+      - name: Generate JaCoCo Coverage Report
+        if: matrix.java-version == 21
+        run: mvn -B jacoco:report
+
+      - name: Upload Coverage Report
+        if: matrix.java-version == 21
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: '**/target/site/jacoco/'
+
+      - name: Coverage Summary
+        if: matrix.java-version == 21
+        run: |
+          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+          if [ -f target/site/jacoco/index.html ]; then
+            echo "JaCoCo coverage report generated successfully." >> $GITHUB_STEP_SUMMARY
+            echo "Download the coverage-report artifact for full details." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No coverage report found." >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Upload Test Reports
         if: failure()
