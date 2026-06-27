@@ -1,10 +1,10 @@
 name: CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+    branches: [develop]
+  push:
+    branches: [develop]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,11 +12,11 @@ concurrency:
 
 jobs:
   build:
-    name: Build & Test
+    name: Build & Test (JDK ${{ matrix.java-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [ 17, 21 ]
+        java-version: [17, 21]
 
     steps:
       - name: Checkout
@@ -33,11 +33,11 @@ jobs:
         run: mvn -B clean verify --fail-at-end
 
       - name: Generate JaCoCo Coverage Report
-        if: matrix.java-version == 21
+        if: matrix.java-version == 21 && always()
         run: mvn -B jacoco:report
 
       - name: Upload Coverage Report
-        if: matrix.java-version == 21
+        if: matrix.java-version == 21 && always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
@@ -47,14 +47,18 @@ jobs:
         if: matrix.java-version == 21
         run: |
           echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
-          if [ -f target/site/jacoco/index.html ]; then
-            echo "JaCoCo coverage report generated successfully." >> $GITHUB_STEP_SUMMARY
-            echo "Download the coverage-report artifact for full details." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No coverage report found." >> $GITHUB_STEP_SUMMARY
-          fi
+          for f in $(find . -path '*/site/jacoco/jacoco.csv' 2>/dev/null); do
+            module=$(echo "$f" | sed 's|./\(.*\)/target/.*|\1|')
+            missed=$(tail -n +2 "$f" | awk -F',' '{sum+=$4} END {print sum+0}')
+            covered=$(tail -n +2 "$f" | awk -F',' '{sum+=$5} END {print sum+0}')
+            total=$((missed + covered))
+            if [ $total -gt 0 ]; then
+              pct=$((covered * 100 / total))
+              echo "- **$module**: ${pct}% instruction coverage ($covered/$total)" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
 
-      - name: Upload Test Reports
+      - name: Upload Test Reports (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
