@@ -1,5 +1,7 @@
 package space.hypercode.core.providers;
 
+import lombok.Getter;
+
 import java.time.Duration;
 import java.util.Optional;
 
@@ -14,10 +16,20 @@ import java.util.Optional;
  * <p>Instances are created by a {@link MemoizationProviderFactory} and are
  * cached per memoization name by the framework.
  */
+@Getter
 public abstract class MemoizationProvider {
 
+    /**
+     *  logical name of this cache.
+     */
     private final String memoizationName;
+    /**
+     *  time-to-live for entries in this cache.
+     */
     private final Duration ttl;
+    /**
+     *  maximum number of entries allowed in this cache.
+     */
     private final long maxSize;
 
     /**
@@ -34,33 +46,6 @@ public abstract class MemoizationProvider {
        this.memoizationName = memoizationName;
        this.ttl = ttl;
        this.maxSize = maxSize;
-    }
-
-    /**
-     * Returns the logical name of this cache.
-     *
-     * @return the memoization name
-     */
-    public String getMemoizationName() {
-        return memoizationName;
-    }
-
-    /**
-     * Returns the time-to-live for entries in this cache.
-     *
-     * @return the TTL duration
-     */
-    public Duration getTtl() {
-        return ttl;
-    }
-
-    /**
-     * Returns the maximum number of entries allowed in this cache.
-     *
-     * @return the max size, or 0 if unlimited
-     */
-    public long getMaxSize() {
-        return maxSize;
     }
 
     /**
